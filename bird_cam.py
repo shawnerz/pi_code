@@ -20,7 +20,7 @@ GPIO.setup(11, GPIO.IN)
 camera = PiCamera()     #Camera initialization
 
 #camera.rotation = 180	#Uncomment to rotate if camera or Pi is upside-down
-picture_count = 399     #picture counter
+picture_count = 0	#picture counter
 
 
 def snapshot(count):
