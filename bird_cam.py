@@ -1,5 +1,10 @@
 #***************************************************************#
-# This code is to use a Raspberry Pi as a Wildlife Camera.     	#
+# This code is to use a Raspberry Pi as a Bird Camera.     	#
+# Since birds are primarly active from about 6 AM to 6 PM, the  #
+# camera is only enabled during that time. If you're going to   #
+# use this as a wildlife or trail camera and plan to take       #
+# nightime pictures with an IR illuminator, then remove or      #
+# comment out the hour check 'if' statement.                    #
 # A Passive Infrared (PIR) sensor and Pi Camera is to be       	#
 # connected to the Pi. The PIR sensor is supposed to be		#
 # connected to GP17 (a.k.a. GPIO11). When tripped, the camera	#
@@ -10,11 +15,10 @@
 #                                                               #
 # disable_camera_led=1                                          #
 #                                                               #
-# SRC 25 Sep 2016
+# SRC 4 Oct 2016
 #***************************************************************#
 import RPi.GPIO as GPIO
-import time
-import sensor
+import time, datetime, sensor
 from picamera import PiCamera
 from time import sleep
 
@@ -26,6 +30,9 @@ camera = PiCamera()     #Camera initialization
 #camera.rotation = 180	#Uncomment to rotate if camera or Pi is upside-down
 picture_count = 0	#picture counter
 max_picture_count = 400 #Keeps from filling the SD card with pictures
+start_hour = 6          #Hour to start taking pictures
+end_hour = 18           #Hour to stop taking pictures
+current_hour = 0        #Initial hour value
 
 def snapshot(count):
     camera.awb_mode = 'auto'
@@ -34,15 +41,20 @@ def snapshot(count):
     
 while True:
     i=GPIO.input(11)
-    if i==0:
-	#print ("No birds detected"),i #optional debug code
-        time.sleep(1)
-    elif i ==1:
-        if picture_count < max_picture_count:
-            #print ("Bird detected! Taking picture.") #optional debug code
-            snapshot(picture_count)
-            picture_count += 1 #Increments picture counter
-
-        else:
-            exit(0) # Picture count exceeded; exiting
+    current_hour = datetime.datetime.now().time().hour
+    if current_hour >= 6 and current_hour < 18:
         
+        if i==0:
+	#print ("No birds detected"),i #optional debug code
+            time.sleep(1)
+        elif i ==1:
+            if picture_count < max_picture_count:
+                #print ("Bird detected! Taking picture.") #optional debug code
+                snapshot(picture_count)
+                picture_count += 1 #Increments picture counter
+
+            else:
+                exit(0) # Picture count exceeded; exiting
+        
+    else:
+        sleep(60)
