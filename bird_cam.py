@@ -18,7 +18,7 @@
 # SRC 4 Oct 2016
 #***************************************************************#
 import RPi.GPIO as GPIO
-import time, datetime, sensor
+import time, datetime
 from picamera import PiCamera
 from time import sleep
 
@@ -31,7 +31,7 @@ camera = PiCamera()     #Camera initialization
 picture_count = 0	#picture counter
 max_picture_count = 400 #Keeps from filling the SD card with pictures
 start_hour = 6          #Hour to start taking pictures
-end_hour = 18           #Hour to stop taking pictures
+end_hour = 19           #Hour to stop taking pictures
 current_hour = 0        #Initial hour value
 
 def snapshot(count):
@@ -42,7 +42,7 @@ def snapshot(count):
 while True:
     i=GPIO.input(11)
     current_hour = datetime.datetime.now().time().hour
-    if current_hour >= 6 and current_hour < 18:
+    if current_hour >= start_hour and end_hour < 18:
         
         if i==0:
 	#print ("No birds detected"),i #optional debug code
