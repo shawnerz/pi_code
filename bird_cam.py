@@ -1,10 +1,11 @@
 #***************************************************************#
 # This code is to use a Raspberry Pi as a Bird Camera.     	#
 # Since birds are primarly active from about 6 AM to 6 PM, the  #
-# camera is only enabled during that time. If you're going to   #
-# use this as a wildlife or trail camera and plan to take       #
-# nightime pictures with an IR illuminator, then remove or      #
-# comment out the hour check 'if' statement.                    #
+# camera is only enabled during that time. Change start_hour	#
+# and end_hour for your local needs.				#
+# If you're going to use this as a wildlife or trail camera and #
+# plan to take nightime pictures with an IR illuminator, then	#
+# remove or comment out the hour check 'if' statement.          #
 # A Passive Infrared (PIR) sensor and Pi Camera is to be       	#
 # connected to the Pi. The PIR sensor is supposed to be		#
 # connected to GP17 (a.k.a. GPIO11). When tripped, the camera	#
@@ -15,7 +16,7 @@
 #                                                               #
 # disable_camera_led=1                                          #
 #                                                               #
-# SRC 4 Oct 2016
+# SRC 24 Oct 2016						#
 #***************************************************************#
 import RPi.GPIO as GPIO
 import time, datetime
@@ -42,19 +43,20 @@ def snapshot(count):
 while True:
     i=GPIO.input(11)
     current_hour = datetime.datetime.now().time().hour
-    if current_hour >= start_hour and end_hour < 18:
+    if current_hour >= start_hour and current_hour < end_hour:
         
-        if i==0:
+        if i == 0:
 	#print ("No birds detected"),i #optional debug code
             time.sleep(1)
-        elif i ==1:
+        elif i == 1:
             if picture_count < max_picture_count:
                 #print ("Bird detected! Taking picture.") #optional debug code
                 snapshot(picture_count)
                 picture_count += 1 #Increments picture counter
 
             else:
-                exit(0) # Picture count exceeded; exiting
+                exit(0) # Picture count exceeded; exiting program
         
     else:
-        sleep(60)
+        sleep(60)	# This is executed if it's not time to take to take 
+			# pictures.
